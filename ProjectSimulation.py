@@ -43,7 +43,20 @@ def plot_color_graph(G, color_map, t=1):
     f, ax = plt.subplots()
     move_figure(f, 900, 100)
     pos = nx.spring_layout(G, k=0.9, seed=111)
-    nx.draw(G, node_color=color_map, with_labels=True, pos=pos)
+    nx.draw(G, node_color=color_map, with_labels=True, pos=pos, )
+    plt.show()
+    # plt.show(block=False)
+    # plt.pause(t)
+    # plt.close()
+
+
+def plot_weighted_graph(G, color_map, t=1):
+    f, ax = plt.subplots()
+    move_figure(f, 900, 100)
+    pos = nx.spring_layout(G, k=0.9, seed=111)
+    nx.draw(G, node_color=color_map, with_labels=True, pos=pos, )
+    labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
     plt.show()
     # plt.show(block=False)
     # plt.pause(t)
@@ -134,8 +147,12 @@ def network_generator(num_cliques = 30, num_edges = 80):
             last_node = nodes[-1] + 1
 
         Clique = nx.complete_graph(range(last_node, last_node+clique_size))
+
         G.add_edges_from(Clique.edges)
+        for edge in Clique.edges:
+            G[edge[0]][edge[1]]['weight'] = round(r.uniform(0.5, 0.9),2)
         return G
+
 
     def add_edge(G):
         edges = list(G.edges)
@@ -146,7 +163,7 @@ def network_generator(num_cliques = 30, num_edges = 80):
         if (n1,n2) in edges:
             add_edge(G)
         else:
-            G.add_edge(n1, n2)
+            G.add_edge(n1, n2, weight= round(r.uniform(0.1, 0.5),2))
         return G
 
 
@@ -170,12 +187,13 @@ def network_generator(num_cliques = 30, num_edges = 80):
 if __name__ == "__main__":
     # simulate_1(15, 0)
     # simulate_2(15, 1)
-    G = network_generator()
-    nx.write_edgelist(G, 'Graph.gz')
-    #G = nx.read_edgelist('Graph.gz')
+    # G = network_generator()
+    # nx.write_edgelist(G, 'Graph.gz')
+    G = nx.read_edgelist('Graph.gz')
     #print(G.number_of_nodes(), ' nodes, ', G.number_of_edges(), ' edges')
-    G_statistics(G)
-    plot_color_graph(G, color_map=['blue'] * G.number_of_nodes())
+    #G_statistics(G)
+    plot_weighted_graph(G, color_map=['blue'] * G.number_of_nodes())
+
 
     osoby = []
     for i in range(0, nx.number_of_nodes(G)):
