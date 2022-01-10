@@ -8,11 +8,6 @@ import random as r
 import copy
 
 
-class Osoba:
-    def __init__(self, index, chory):
-        self.i = index
-        self.chory = chory
-
 
 
 def G_statistics(G):
@@ -150,7 +145,7 @@ def network_generator(num_cliques = 30, num_edges = 80):
 
         G.add_edges_from(Clique.edges)
         for edge in Clique.edges:
-            G[edge[0]][edge[1]]['weight'] = round(r.uniform(0.5, 0.9),2)
+            G[edge[0]][edge[1]]['weight'] = round(r.uniform(0.01, 0.5),2)
         return G
 
 
@@ -163,7 +158,7 @@ def network_generator(num_cliques = 30, num_edges = 80):
         if (n1,n2) in edges:
             add_edge(G)
         else:
-            G.add_edge(n1, n2, weight= round(r.uniform(0.1, 0.5),2))
+            G.add_edge(n1, n2, weight= round(r.uniform(0.01, 0.1),2))
         return G
 
 
@@ -184,20 +179,67 @@ def network_generator(num_cliques = 30, num_edges = 80):
 
     return G
 
+class Osoba:
+    def __init__(self, index, chory, ma_symptomy, kwarantana, leczenie):
+        self.id = index
+        self.chory = chory
+        self.ma_symptomy = ma_symptomy
+        self.kwarantana = kwarantana
+        self.leczenie = leczenie
+
+    def simulate(G, osoby):
+        chory_1 = r.choice(osoby)
+        chory_1.chory = 1
+
+        def ill_neighbours(G, node):
+            n_list = []
+            neighbours = get_neighbours(G, node)
+            for neighbour in neighbours:
+                if osoby[int(neighbour)].chory == 1:
+                    n_list.append(neighbour)
+            return n_list
+
+        def add_ill(osoby, id_list):
+            for osoba in osoby:
+                if osoba.id in id_list:
+                    osoba.chory = 1
+            return osoby
+
+        def ill_transmit(G):
+            new_ill = []
+            for node in G.nodes:
+                if ill_neighbours(G, node) != []:
+                    for ill_neib in ill_neighbours(G, node):
+                        if G[node][ill_neib]['weight'] <= r.uniform(0, 1):
+                            new_ill.append(node)
+            return new_ill
+
+        new_ill = ill_transmit(G)
+
+        osoby = add_ill(osoby, new_ill)
+
+
 if __name__ == "__main__":
     # simulate_1(15, 0)
     # simulate_2(15, 1)
+
+
     # G = network_generator()
     # nx.write_edgelist(G, 'Graph.gz')
     G = nx.read_edgelist('Graph.gz')
     #print(G.number_of_nodes(), ' nodes, ', G.number_of_edges(), ' edges')
     #G_statistics(G)
-    plot_weighted_graph(G, color_map=['blue'] * G.number_of_nodes())
+    #plot_weighted_graph(G, color_map=['lime'] * G.number_of_nodes())
 
 
-    osoby = []
-    for i in range(0, nx.number_of_nodes(G)):
-        osoba = Osoba(i, 0)
-        osoby.append(osoba)
+    # osoby = []
+    # for i in range(0, nx.number_of_nodes(G)):
+    #     osoba = Osoba(i, 0, 0, 0, 0)
+    #     osoby.append(osoba)
+    #
+    #
+    #
+    #
+    # simulate(G, osoby)
 
 
