@@ -34,15 +34,15 @@ def move_figure(f, x, y):
         # You can also use window.setGeometry
         f.canvas.manager.window.move(x, y)
 
-def plot_color_graph(G, color_map, t=1):
+def plot_color_graph(G, color_map, t=0.1):
     f, ax = plt.subplots()
     move_figure(f, 900, 100)
     pos = nx.spring_layout(G, k=0.9, seed=111)
     nx.draw(G, node_color=color_map, with_labels=True, pos=pos, )
     plt.show()
-    # plt.show(block=False)
-    # plt.pause(t)
-    # plt.close()
+    plt.show(block=False)
+    plt.pause(t)
+    plt.close()
 
 
 def plot_weighted_graph(G, color_map, t=1):
