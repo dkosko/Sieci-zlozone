@@ -131,7 +131,7 @@ def simulate_2(n=15, do_plots = 1):
     print('Liczba iteracji= ', count)
 
 
-def network_generator(num_cliques = 30, num_edges = 80):
+def network_generator(num_cliques = 100, num_edges = 0):
     def add_clique(G):
         # 5% - 1os , 25% - 2os, 40% - 3os, 25% - 4os, 5% - 5os
         clique_size = r.choices([1, 2, 3, 4, 5], weights=[5, 12, 13, 6, 1])[0]
@@ -166,16 +166,15 @@ def network_generator(num_cliques = 30, num_edges = 80):
     for i in range(num_cliques):
         G = add_clique(G)
     #plot_color_graph(G, color_map=['blue'] * G.number_of_nodes(), t=2)
-    print(G.number_of_nodes(),' nodes, ',G.number_of_edges(), ' edges')
+    # print(G.number_of_nodes(),' nodes, ',G.number_of_edges(), ' edges')
+    while nx.node_connectivity(G) == 0:
+        G = add_edge(G)
+    # print(G.number_of_nodes(), ' nodes, ', G.number_of_edges(), ' edges')
+    #plot_color_graph(G, color_map=['blue'] * G.number_of_nodes(), t=5)
     for i in range(num_edges):
         G = add_edge(G)
     #plot_color_graph(G, color_map=['blue'] * G.number_of_nodes(), t=5)
-    print(G.number_of_nodes(),' nodes, ',G.number_of_edges(), ' edges')
-
-    while nx.node_connectivity(G) == 0:
-        G = add_edge(G)
-    print(G.number_of_nodes(), ' nodes, ', G.number_of_edges(), ' edges')
-    #plot_color_graph(G, color_map=['blue'] * G.number_of_nodes(), t=5)
+    # print(G.number_of_nodes(),' nodes, ',G.number_of_edges(), ' edges')
 
     return G
 
@@ -224,22 +223,13 @@ if __name__ == "__main__":
     # simulate_2(15, 1)
 
 
-    # G = network_generator()
+    G = network_generator(50, 0)
     # nx.write_edgelist(G, 'Graph.gz')
-    G = nx.read_edgelist('Graph.gz')
+    # G = nx.read_edgelist('Graph.gz')
     #print(G.number_of_nodes(), ' nodes, ', G.number_of_edges(), ' edges')
-    #G_statistics(G)
+    # G_statistics(G)
     #plot_weighted_graph(G, color_map=['lime'] * G.number_of_nodes())
 
 
-    # osoby = []
-    # for i in range(0, nx.number_of_nodes(G)):
-    #     osoba = Osoba(i, 0, 0, 0, 0)
-    #     osoby.append(osoba)
-    #
-    #
-    #
-    #
-    # simulate(G, osoby)
 
 

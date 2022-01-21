@@ -192,14 +192,14 @@ def SIR_quarantine(G, Nb_inf_init, Gamma, Q, N, T):
 def plot_total_cases(G, T, Gamma, Q, Nb_inf_init):
 
 
-    s, inf, r = SIR(G, Nb_inf_init, Gamma, N, T)
+    s, inf, r = SIR_norm(G, Nb_inf_init, Gamma, N, T)
+    new_inf = count_new_cases(s, Nb_inf_init)
     plt.plot((100 / N) * inf, color='r', marker='o', label="Infected")
     plt.plot((100 / N) * r, color='g', marker='o', label="Recovered")
 
-    s, inf, r = SIR_norm(G, Nb_inf_init, Gamma, N, T)
-    new_inf = count_new_cases(s, Nb_inf_init)
-    plt.plot((100 / N) * inf, color='r', marker='$n$', label="Infected_norm")
-    plt.plot((100 / N) * r, color='g', marker='$n$', label="Recovered_norm")
+
+
+
 
     s, inf, r = SIR_quarantine(G, Nb_inf_init, Gamma, Q, N, T)
     new_inf_q = count_new_cases(s, Nb_inf_init)
@@ -243,23 +243,56 @@ def plot_new_cases(G, T, Gamma, Q, Nb_inf_init):
     plt.legend()
     plt.show()
 
+#wskaźniki: liczba dni trwania epidemii, liczba osób przechorowanych, maksymalna liczba osób chorych jednocześnie
+def count_indicators(inf, r, N):
+    for i in range(len(inf)):
+        if inf[i] == 0:
+            end = i
+            break
+    return end, r[-1]/N, max(inf)/N
+
+def simulate(n_clique, n_edges):
+    T_norm, Inf_norm, Max_norm = [], [], []
+    T_q, Inf_q, Max_q = [], [], []
+    for i in range(100):
+        G = network_generator(n_clique, n_edges)
+        T = 200
+        # number of agents
+        N = G.number_of_nodes()
+        Gamma = 14
+        Q = 6
+        Nb_inf_init = 5
+
+
+        s, inf, r = SIR_norm(G, Nb_inf_init, Gamma, N, T)
+        i_1, i_2, i_3 = count_indicators(inf, r, N)
+        T_norm.append(i_1)
+        Inf_norm.append(i_2)
+        Max_norm.append(i_3)
+
+        s, inf, r = SIR_quarantine(G, Nb_inf_init, Gamma, Q, N, T)
+        i_1, i_2, i_3 = count_indicators(inf, r, N)
+        T_q.append(i_1)
+        Inf_q.append(i_2)
+        Max_q.append(i_3)
+    print(n_clique, ' / ', n_edges)
+    # print(round(sum(T_norm)/len(T_norm), 1), ', ', round(sum(T_q)/len(T_q),1))
+    # print(round(sum(Inf_norm) / len(Inf_norm), 2), ', ', round(sum(Inf_q) / len(Inf_q), 2))
+    # print(round(sum(Max_norm) / len(Max_norm), 2), ', ', round(sum(Max_q) / len(Max_q), 2))
+    # print('')
+    print(round((sum(T_norm) / len(T_norm)) / (sum(T_q) / len(T_q)), 2))
+    print(round((sum(Inf_norm) / len(Inf_norm)) / (sum(Inf_q) / len(Inf_q)), 2))
+    print(round((sum(Max_norm) / len(Max_norm)) / (sum(Max_q) / len(Max_q)), 2))
+    print('')
+
 if __name__ == "__main__":
-    G = nx.read_edgelist('Graph.gz')
+    # G = nx.read_edgelist('Graph.gz')
     #G = network_generator(200)
     # nx.write_edgelist(G, 'Graph.gz')
-    T = 100
-    # number of agents
-    N = G.number_of_nodes()
-    Gamma = 14
-    Q = 5
-    Nb_inf_init = 5
+
+    for n_clique in (50, 100, 200):
+        for n_edges in (0, 100, 200):
+            simulate(n_clique, n_edges)
 
 
-    plot_total_cases(G, T, Gamma, Q, Nb_inf_init)
 
-    # plot_new_cases(G, T, Gamma, Q, Nb_inf_init)
-
-    #SIR(G, Nb_inf_init, Gamma, N, T)
-
-
-    #wskaźniki: liczba dni trwania epidemii, liczba osób przechorowanych, maksymalna liczba osób chorych jednocześnie
