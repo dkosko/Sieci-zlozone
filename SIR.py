@@ -2,14 +2,14 @@ import networkx as nx
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-from ProjectSimulation import network_generator, G_statistics, plot_color_graph
+from ProjectSimulation import network_generator
+
 
 def SIR(G, Nb_inf_init, Gamma, N, T):
     """ function that runs a simulation of an SIR model on a network.
     Args:
         Gamma(float): recovery rate
-        Beta(float): infection probability
-        Rho(float): initial fraction of infected individuals
+        Nb_inf_init(int): initial number of infected individuals
         N(int): number of agents (nodes)
         T(int): number of time steps simulated
     """
@@ -70,8 +70,7 @@ def SIR_norm(G, Nb_inf_init, Gamma, N, T):
     """ function that runs a simulation of an SIR model on a network.
     Args:
         Gamma(float): recovery rate
-        Beta(float): infection probability
-        Rho(float): initial fraction of infected individuals
+        Nb_inf_init(int): initial number of infected individuals
         N(int): number of agents (nodes)
         T(int): number of time steps simulated
     """
@@ -190,7 +189,7 @@ def SIR_quarantine(G, Nb_inf_init, Gamma, Q, N, T):
 
 
 def plot_total_cases(G, T, Gamma, Q, Nb_inf_init):
-
+    N = G.number_of_nodes()
 
     s, inf, r = SIR_norm(G, Nb_inf_init, Gamma, N, T)
     new_inf = count_new_cases(s, Nb_inf_init)
@@ -229,6 +228,7 @@ def count_new_cases(s, Nb_inf_init):
 
 
 def plot_new_cases(G, T, Gamma, Q, Nb_inf_init):
+    N = G.number_of_nodes()
     s, inf, r = SIR_norm(G, Nb_inf_init, Gamma, N, T)
     new_inf = count_new_cases(s, Nb_inf_init)
     plt.plot(new_inf, "r", marker='o', label="Infected")
